@@ -8,7 +8,7 @@ const NavStyle = styled.nav`
     background-color: #0c0950;
     color: white;
     width: 100vw;
-    height: 65px;
+    height: 75px;
     align-items: center;
 `;
 
@@ -25,8 +25,8 @@ const LogoDiv = styled.div`
 `;
 
 const Logo = styled.img`
-    width: 50px; 
-    height: 50px; 
+    width: 75px; 
+    height: auto; 
 `;
 
 const TabsDiv = styled.div`
@@ -84,7 +84,7 @@ export default function NavBar() {
         <NavStyle>
             <LeftDiv>
                 <LogoDiv>
-                    <Logo src="/images/bomboclaat_image.jpeg" alt="Logo" />
+                    <Logo src="/images/logo.png" alt="Logo" />
                 </LogoDiv>
                 <TabsDiv>
                     <PageHeader>Search Groups</PageHeader>
