@@ -95,7 +95,9 @@ export default function NavBar() {
             <RightDiv>
                 <AccountDiv>
                     <PageHeader>Log In</PageHeader>
-                    <SignUpBox>Sign Up</SignUpBox>
+                    <SignUpBox>
+                        <PageHeader href="/auth/signup">Sign Up</PageHeader>
+                    </SignUpBox>
                 </AccountDiv>
             </RightDiv>
         </NavStyle>

@@ -10,7 +10,6 @@ const Form = styled.form`
     flex-direction: column;
     align-items: center;
     width: 35vw;
-    height: 570px;
     border: 1px solid #E4E0E1;
     border-radius: 5px;
     margin: 100px auto;
@@ -169,7 +168,7 @@ export default function Signup() {
             </RestrictionList>
             <Submit type="submit">Create Account</Submit>
             <LoginTextContainer>
-                <LoginText>Already have an account? <Redirect href="/">Log in</Redirect>.</LoginText>
+                <LoginText>Already have an account? <Redirect href="/auth/login">Log in</Redirect>.</LoginText>
             </LoginTextContainer>
         </Form>
     );
