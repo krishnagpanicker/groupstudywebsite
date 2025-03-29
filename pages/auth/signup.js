@@ -145,12 +145,46 @@ export default function Signup() {
     const [password, setPassword] = useState("");
     const [shown, setShown] = useState(false);
     const [status, setStatus] = useState("");
+    const router = useRouter();
 
     const createAccount = (event) => {
         event.preventDefault();
         console.log("Email: " + email + "\nPassword: " + password);
-        
-    }
+        if(email.substring(email.length-8, email.length) != "@psu.edu") {
+            console.log("Ending: ", email.substring(email.length-8, email.length));
+            setStatus("Incorrect email format.");
+        }
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                setStatus("Account succesfully created. Redirecting...");
+                console.log("User created succesfully: ", userCredential.user);
+                updateProfile(userCredential.user, {
+                    displayName: firstName + " " + lastName,
+                    photoURL: "/images/default.png",
+                });
+                setTimeout(() => {
+                    router.push("/");
+                }, 3000);
+            })
+            .catch((error) => {
+                if (error.code === "auth/email-already-in-use") {
+                    setStatus("Email already in use.");
+                    console.log("Email already in use.");
+                }
+                else if (error.code === "auth/invalid-email") {
+                    setStatus("Invalid email address.");
+                    console.log("Invalid email address.");
+                }
+                else if (error.code === "auth/weak-password") {
+                    setStatus("Password must be at least 8 characters long.");
+                    console.log("Weak password.");
+                }
+                else {
+                    setStatus("Error in account creation: ", error.message);
+                    console.log("Error in account creation: ", error.message);
+                }
+            });
+    };
 
     return (
         <Form onSubmit={createAccount}>
