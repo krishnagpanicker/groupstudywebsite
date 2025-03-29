@@ -38,7 +38,7 @@ const TabsDiv = styled.div`
 
 const PageHeader = styled.a`
     font-size: 16px;
-    color: white
+    color: white;
     cursor: pointer;
     text-decoration: none;
     transition: font-size 0.3s ease; 
@@ -87,14 +87,14 @@ export default function NavBar() {
                     <Logo src="/images/logo.png" alt="Logo" />
                 </LogoDiv>
                 <TabsDiv>
-                    <PageHeader>Search Groups</PageHeader>
-                    <PageHeader>My Events</PageHeader>
-                    <PageHeader>Study Buddies</PageHeader>
+                    <PageHeader href="/searchgroups">Search Groups</PageHeader>
+                    <PageHeader href="/myevents">My Events</PageHeader>
+                    <PageHeader href="/studybuddies">Study Buddies</PageHeader>
                 </TabsDiv>
             </LeftDiv>
             <RightDiv>
                 <AccountDiv>
-                    <PageHeader>Log In</PageHeader>
+                    <PageHeader href="/auth/login">Log In</PageHeader>
                     <SignUpBox>
                         <PageHeader href="/auth/signup">Sign Up</PageHeader>
                     </SignUpBox>

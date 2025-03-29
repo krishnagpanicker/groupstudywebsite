@@ -44,7 +44,7 @@ const ImgIcon = styled.img`
     height: 50px; 
 `;
 
-export default function Website(){
+export default function Homepage(){
     return(
         <> 
         <NavBar> </NavBar>
