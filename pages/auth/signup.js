@@ -131,15 +131,29 @@ const Redirect = styled.a`
     text-decoration: underline;
 `;
 
+const StatusText = styled.p`
+    font-size: 15px;
+    font-weight: 300;
+    color: red;
+
+`;
+
 export default function Signup() {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [shown, setShown] = useState(false);
+    const [status, setStatus] = useState("");
+
+    const createAccount = (event) => {
+        event.preventDefault();
+        console.log("Email: " + email + "\nPassword: " + password);
+        
+    }
 
     return (
-        <Form>
+        <Form onSubmit={createAccount}>
             <Heading>Create account</Heading>
             <hr style={{ border: "1px solid #E4E0E1", width: "100%", margin: "10px 0px 10px 0px" }}/>
             <FieldHeader>Full Name (First, Last)</FieldHeader>
@@ -159,6 +173,7 @@ export default function Signup() {
                 <Show type="checkbox" checked={shown} onChange={() => setShown(!shown)}></Show>
                 <ShowText>Show Password</ShowText>
             </ShowContainer>
+            <StatusText>{status}</StatusText>
             <FieldHeader>Password Restrictions:</FieldHeader>
             <RestrictionList>
                 <ListItem>Password must be from 8 to 30 characters long.</ListItem>
