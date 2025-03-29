@@ -27,6 +27,10 @@ const LogoDiv = styled.div`
 const Logo = styled.img`
     width: 75px; 
     height: auto; 
+    transition: transform 0.3s ease;
+    &:hover {
+        transform: scale(1.2);
+    }
 `;
 
 const TabsDiv = styled.div`
@@ -84,7 +88,9 @@ export default function NavBar() {
         <NavStyle>
             <LeftDiv>
                 <LogoDiv>
+                    <a href="/">
                     <Logo src="/images/logo.png" alt="Logo" />
+                    </a>
                 </LogoDiv>
                 <TabsDiv>
                     <PageHeader href="/searchgroups">Search Groups</PageHeader>

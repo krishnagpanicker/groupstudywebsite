@@ -11,27 +11,27 @@ const Body = styled.main`
     gap: 300px;
 `;
 
-const ImgHContainer = styled.div`
+export const ImgHContainer = styled.div`
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    gap: 10px;
+    gap: 20px;
 `
 
-const HContainer = styled.div`
+export const HContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
 `;
 
-const Homeheading = styled.h1`
+export const Heading = styled.h1`
     font-size: 36px;
     font-weight: 300;
     padding-bottom: 5px; 
 `;
 
-const Underline = styled.hr`
+export const Underline = styled.hr`
     width: 75px; 
     height: 3px; 
     background-color: #40A2E3; 
@@ -39,7 +39,7 @@ const Underline = styled.hr`
     margin: 5px 0; 
 `;
 
-const ImgIcon = styled.img`
+export const ImgIcon = styled.img`
     width: 50px; 
     height: 50px; 
 `;
@@ -52,14 +52,14 @@ export default function Homepage(){
             <ImgHContainer>
                 <ImgIcon src="/images/notbook.png" alt="Logo" />
                 <HContainer> 
-                    <Homeheading>Today's Events</Homeheading>
+                    <Heading>Today's Events</Heading>
                     <Underline/>
                 </HContainer>   
             </ImgHContainer>
             <ImgHContainer>
                 <ImgIcon src="/images/calender2.png" alt="Logo" />
                 <HContainer> 
-                    <Homeheading>Future Events</Homeheading>
+                    <Heading>Future Events</Heading>
                     <Underline/>
                 </HContainer>   
             </ImgHContainer>    
