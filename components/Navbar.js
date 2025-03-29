@@ -6,8 +6,7 @@ const NavStyle = styled.nav`
     background-color: #0c0950;
     color: white;
     width: 100vw;
-    top: 0;
-    left: 0;
+    height: 65px;
 
 `;
 
