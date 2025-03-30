@@ -4,6 +4,7 @@ import { Heading,Underline } from "/";
 import { Body,FieldHeader,SelectorDiv,Spacer } from ".//myevents";
 import React, { useState, useEffect, useRef } from "react";
 import { useStateContext } from "@/context/StateContext";
+import { collection, addDoc, getDocs, query, orderBy, where } from 'firebase/firestore';
 
 const MySearchBody = styled.main`
     flex-direction: column !important; 
@@ -28,7 +29,7 @@ const SearchBorder = styled.div`
     width: 0; 
     height: 100vh; 
     border-right: 2px solid black;
-    margin-left: 50px;
+    margin-left: 200px;
 `
 const HContainer = styled.div`
     display: flex;
@@ -42,7 +43,8 @@ const TextboxDiv = styled.div`
     flex-direction: column !important; 
     display: flex;
     margin: 10px auto;
-    width: 80%;
+    width: 100%;
+    margin-left: 100px;
     
 `
 
@@ -62,43 +64,90 @@ const Selector = styled.select`
     text-align: center;
 `
 
+const CheckboxDiv = styled.div`
+    flex-direction: row !important; 
+    display: flex;
+    gap: 20px;
+`
+
+const Checkbox = styled.input`
+    width: 25px;
+    height: 25px;
+    margin: 7px;
+`
+
+const Button = styled.button`
+    background-color: #0C0950;
+    border-radius: 3px;
+    color: white;
+    padding: 10px 30px;
+    font-size: 15px;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: #4D55CC;
+    }
+`
+const ButtonDiv = styled.div`
+    flex-direction: row !important; 
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    width: 100%;
+    margin-left: 175px;
+`
+
+const EventList = styled.div`
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    overflow-y: auto;
+    gap: 20px;
+    max-height: 60vh;
+    padding: 20px;
+`
 
 export default function SearchGroupsPage(){
     const { user } = useStateContext();
-    const [isOpen, setIsOpen] = useState(false);
-    const [courseCode, setCourse] = useState("");
-    const [located, setLocation] = useState("");
-    const [described, setDescription] = useState("");
-    const [selectedHour1, setHour1] = useState(12);
-    const [selectedMinute1, setMinute1] = useState(0);
-    const [AM1, setAM1] = useState("AM");
-    const [selectedHour2, setHour2] = useState(12);
-    const [selectedMinute2, setMinute2] = useState(0);
-    const [AM2, setAM2] = useState("AM");
+    const [events, setEvents] = useState([]);
 
-    const [selectedMonth, setMonth] = useState(1);
-    const [selectedYear, setYear] = useState(2025);
-    const [selectedDay, setDay] = useState(1);
-    const [daysInMonth, setDaysInMonth] = useState([]);
+    const [courseFilter, setCourseFilter] = useState(false);
+    const [emailFilter, setEmailFilter] = useState(false);
+    const [locationFilter, setLocationFilter] = useState(false);
 
-    useEffect(() => {
-        let numDays = 0;
-        let isLeapYear = selectedYear % 4 == 0;
-        if (selectedMonth == 1 || selectedMonth == 3 || selectedMonth == 5 || selectedMonth == 7 || selectedMonth == 8 || selectedMonth == 10 || selectedMonth == 12) {
-            numDays = 31;
+    const [eventCreator, setEventCreator] = useState("");
+    const [courseName, setCourseName] = useState("");
+    const [eventLocation, setEventLocation] = useState("");
+
+    const getSortedEvents = async () => {
+        let q = collection(database, "events");
+
+        if (emailFilter && eventCreator.trim() !== "") {
+            q = query(q, where("user.mail", "==", eventCreator));
         }
-        else if (selectedMonth == 4 || selectedMonth == 6 || selectedMonth == 9 || selectedMonth == 11) {
-            numDays = 30;
+
+        if (courseFilter && courseName.trim() !== "") {
+            q = query(q, where("course", "==", courseName));
         }
-        else {
-            numDays = isLeapYear ? 29 : 28;
+    
+        if (locationFilter && eventLocation.trim() !== "") {
+            q = query(q, where("location", "==", eventLocation));
         }
-        let days = [];
-        for (let i = 1; i <= numDays; i++) {
-            days.push(i);
+
+        try {
+            const querySnap = await getDocs(q);
+            let eventTemp = [];
+            querySnap.forEach(doc => {
+                console.log(doc.id, doc.data());
+                eventTemp.push({ id: doc.id, ...doc.data() });
+            });
+            console.log("Temp events: ", eventTemp);
+            setEvents(eventTemp);
+            console.log("Added events: ", events);
         }
-        setDaysInMonth(days);
-    }, [selectedMonth, selectedYear]);
+        catch (error) {
+            console.error("Error retrieving data: ", error.message);
+        }
+    }
 
     return(
         <>
@@ -108,106 +157,55 @@ export default function SearchGroupsPage(){
                 <ImgHContainer>
                     <ImgIcon src="/images/searchstack.png" alt="Logo" />
                     <HContainer>
-                        <Heading>Search Study Events</Heading>
+                        <Heading>Find Study Events</Heading>
                         <Underline/>
                     </HContainer>
                 </ImgHContainer>
                 <TextboxDiv> 
-                    <FieldHeader>Event Creator Name</FieldHeader>
-                    <InputTextbox type="text" placeholder="e.g. Kanye West"></InputTextbox>
+                    <FieldHeader>Event Creator Email</FieldHeader>
+                        <CheckboxDiv>
+                            <InputTextbox type="text" placeholder="e.g. srk1515@psu.edu" value={eventCreator} onChange={(e) => setEventCreator(e.target.value)}></InputTextbox>
+                            <Checkbox type="checkbox" checked={emailFilter} onChange={() => setCourseFilter(!emailFilter)}/>
+                        </CheckboxDiv>
                     <FieldHeader>Course Name</FieldHeader>
-                    <InputTextbox type="text" placeholder="e.g. CMPEN 270"></InputTextbox>
+                        <CheckboxDiv>
+                            <InputTextbox type="text" placeholder="e.g. CMPEN 270" value={courseName} onChange={(e) => setCourseName(e.target.value)}></InputTextbox>
+                            <Checkbox type="checkbox" checked={courseFilter} onChange={() => setEmailFilter(!courseFilter)}/>
+                        </CheckboxDiv>
                     <FieldHeader>Location</FieldHeader>
-                    <InputTextbox type="text" placeholder="e.g. Haller 107" onChange={(e) => setLocation(e.target.value)}></InputTextbox>
-                    <FieldHeader>Time</FieldHeader>
-                            <SelectorDiv>
-                                <Selector id="hour1" value={selectedHour1} onChange={(e) => setHour1(e.target.value)}> 
-                                    <option value={12}>12</option>
-                                    <option value={1}>01</option>
-                                    <option value={2}>02</option>
-                                    <option value={3}>03</option>
-                                    <option value={4}>04</option>
-                                    <option value={5}>05</option>
-                                    <option value={6}>06</option>
-                                    <option value={7}>07</option>
-                                    <option value={8}>08</option>
-                                    <option value={9}>09</option>
-                                    <option value={10}>10</option>
-                                    <option value={11}>11</option>
-                                </Selector>                                
-                                <Selector id="minute1" value={selectedMinute1} onChange={(e) => setMinute1(e.target.value)}> 
-                                    <option value={0}>00</option>
-                                    <option value={15}>15</option>
-                                    <option value={30}>30</option>
-                                    <option value={45}>45</option>
-                                </Selector>
-                                <Selector id="AM_PM1" value={AM1} onChange={(e) => setAM1(e.target.value)}> 
-                                    <option value={"AM"}>AM</option>
-                                    <option value={"PM"}>PM</option>
-                                </Selector>
-                                <Spacer>to</Spacer>
-                                <Selector id="hour2" value={selectedHour2} onChange={(e) => setHour2(e.target.value)}> 
-                                    <option value={12}>12</option>
-                                    <option value={1}>01</option>
-                                    <option value={2}>02</option>
-                                    <option value={3}>03</option>
-                                    <option value={4}>04</option>
-                                    <option value={5}>05</option>
-                                    <option value={6}>06</option>
-                                    <option value={7}>07</option>
-                                    <option value={8}>08</option>
-                                    <option value={9}>09</option>
-                                    <option value={10}>10</option>
-                                    <option value={11}>11</option>
-                                </Selector>                                
-                                <Selector id="minute2" value={selectedMinute2} onChange={(e) => setMinute2(e.target.value)}> 
-                                    <option value={0}>00</option>
-                                    <option value={15}>15</option>
-                                    <option value={30}>30</option>
-                                    <option value={45}>45</option>
-                                </Selector>
-                                <Selector id="AM_PM2" value={AM2} onChange={(e) => setAM2(e.target.value)}> 
-                                    <option value={"AM"}>AM</option>
-                                    <option value={"PM"}>PM</option>
-                                </Selector>
-                            </SelectorDiv>
-                            <FieldHeader>Date</FieldHeader>
-                            <SelectorDiv>
-                                <Selector id="month" value={selectedMonth} onChange={(e) => setMonth(e.target.value)}>
-                                    <option value={1}>Jan</option>
-                                    <option value={2}>Feb</option>
-                                    <option value={3}>Mar</option>
-                                    <option value={4}>Apr</option>
-                                    <option value={5}>May</option>
-                                    <option value={6}>Jun</option>
-                                    <option value={7}>Jul</option>
-                                    <option value={8}>Augt</option>
-                                    <option value={9}>Sepr</option>
-                                    <option value={10}>Oct</option>
-                                    <option value={11}>Nov</option>
-                                    <option value={12}>Dec</option>
-                                </Selector>
-                                <Spacer>/</Spacer>
-                                <Selector id="day" value={selectedDay} onChange={(e) => setDay(e.target.value)}>
-                                    {daysInMonth.map((day) => (
-                                        <option key={day} value={day}>{day}</option>
-                                    ))}
-                                </Selector>
-                                <Spacer>/</Spacer>
-                                <Selector id="year" value={selectedYear} onChange={(e) => setYear(e.target.value)}>
-                                    <option value={2025}>2025</option>
-                                    <option value={2026}>2026</option>
-                                    <option value={2027}>2027</option>
-                                    <option value={2028}>2028</option>
-                                    <option value={2029}>2029</option>
-                                </Selector>
-                            </SelectorDiv>
+                        <CheckboxDiv>
+                            <InputTextbox type="text" placeholder="e.g. Haller 107" value={eventLocation} onChange={(e) => setEventLocation(e.target.value)}></InputTextbox>
+                            <Checkbox type="checkbox" checked={locationFilter} onChange={() => setLocationFilter(!locationFilter)}/>
+                        </CheckboxDiv>
                 </TextboxDiv>
-            </MySearchBody>
-            
-            <SearchBorder>
+                <ButtonDiv>
+                    <Button type="button" onClick={getSortedEvents}>Filter</Button>
+                    <Button type="button" onClick={() => {
+                            setCourseFilter(false);
+                            setEmailFilter(false);
+                            setLocationFilter(false)
+                            }}> Reset </Button>
+                </ButtonDiv>
+            </MySearchBody> 
+            <SearchBorder> </SearchBorder>
+            <EventList>
+                {events.map((event) => {
+                    
+                    console.log(event.startTime.hour + " to " + event.endTime.hour);
+                    let hour_st = event.startTime.hour > 12 ? event.startTime.hour - 12 : event.startTime.hour;
+                    let am_est = event.startTime.hour < 12 || event.startTime.hour == 24;
+                    let st = new Time(hour_st, event.startTime.minute, am_est);
 
-            </SearchBorder>
+                    let hour_et = event.endTime.hour > 12 ? event.endTime.hour - 12 : event.endTime.hour;
+                    let am_eet = event.endTime.hour < 12 || event.endTime.hour == 24;
+                    let et = new Time(hour_et, event.endTime.minute, am_eet);
+
+                    let edate = new Date(event.date.day, event.date.month, event.date.year);
+                    return(
+                    <StudyEvent key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
+                    )
+                })}
+            </EventList>
         </Body>
         </>
     )
