@@ -170,12 +170,12 @@ const CalenderDiv = styled.div`
     flex-direction: row !important; 
     display: flex;
     asign-items: center;
-    margin: 0px auto;
+    margin: 30px auto;
 `
 const ImgCalender = styled.img`
     margin-top: 2px;
     width: 900px; 
-    height: 900px; 
+    height: 800px; 
 `;
 
 const NoEventText = styled.p`
@@ -425,7 +425,7 @@ export default function MyEventsPage(){
             
         </EventBorder>
         <CalenderDiv>
-            <ImgCalender src="/images/March-2025-Calendar.jpg" alt="Logo" /> 
+            <ImgCalender src="/images/calendar.png" alt="Logo" /> 
         </CalenderDiv>
     </Body>
     </>
