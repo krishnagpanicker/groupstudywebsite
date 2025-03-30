@@ -166,6 +166,18 @@ const EventList = styled.div`
     padding: 20px;
 `;
 
+const CalenderDiv = styled.div`
+    flex-direction: row !important; 
+    display: flex;
+    asign-items: center;
+    margin: 0px auto;
+`
+const ImgCalender = styled.img`
+    margin-top: 2px;
+    width: 900px; 
+    height: 900px; 
+`;
+
 export default function MyEventsPage(){
     const { user } = useStateContext();
     const overRef = useRef(null);
@@ -389,6 +401,9 @@ export default function MyEventsPage(){
         <EventBorder>
             
         </EventBorder>
+        <CalenderDiv>
+            <ImgCalender src="/images/March-2025-Calendar.jpg" alt="Logo" /> 
+        </CalenderDiv>
     </Body>
     </>
     )
