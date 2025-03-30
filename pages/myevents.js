@@ -178,6 +178,12 @@ const ImgCalender = styled.img`
     height: 900px; 
 `;
 
+const NoEventText = styled.p`
+    font-size: 20px;
+    font-weight: 400;
+    margin-top: 20px;
+`;
+
 export default function MyEventsPage(){
     const { user } = useStateContext();
     const overRef = useRef(null);
@@ -276,6 +282,12 @@ export default function MyEventsPage(){
                     <Underline/>
                 </HContainer>
             </ImgHContainer>
+            {events.length == 0 ? (
+                <>
+                    <NoEventText>No events created.</NoEventText>
+                    <NoEventText>Click on the + to create a new event.</NoEventText>
+                </>
+            ) : (
             <EventList>
                 {events.map((event) => {
                     
@@ -293,7 +305,7 @@ export default function MyEventsPage(){
                     <StudyEvent key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
                     )
                 })}
-            </EventList>
+            </EventList> )}
         </MyEventBody>
         <CreateEventDiv>
             <NewEvent onClick={() => setIsOpen(true)}>
@@ -395,7 +407,7 @@ export default function MyEventsPage(){
                             <FieldHeader>Description</FieldHeader>
                             <Description placeholder="Your plans for the session or goals you want to achieve." onChange={(e) => setDescription(e.target.value)}></Description>
                         </TextboxDiv>
-                        <SubmitButton  onClick={() => addEvent({date: {day: selectedDay, month: selectedMonth, year: selectedYear, dateCombined: (selectedYear * 10000) + (selectedMonth * 100) + selectedDay}, description: described, endTime: {hour: AM2 ? selectedHour2 : selectedHour2 + 12, minute: selectedMinute2}, location: located, startTime: {hour: AM1 ? selectedHour1 : selectedHour1 + 12, minute: selectedMinute1}, user: {displayName: user.displayName, mail: user.email}, course: courseCode})}>Create Event</SubmitButton>
+                        <SubmitButton  onClick={() => addEvent({date: {day: selectedDay, month: selectedMonth, year: selectedYear, dateCombined: (selectedYear * 10000) + (selectedMonth * 100) + selectedDay}, description: described, endTime: {hour: AM2 ? selectedHour2 : selectedHour2 + 12, minute: selectedMinute2}, location: located, startTime: {hour: AM1 ? selectedHour1 : selectedHour1 + 12, minute: selectedMinute1}, user: {displayName: user.displayName, mail: user.email}, members: [], course: courseCode})}>Create Event</SubmitButton>
                     </PopupContainer>
                 </Overlay>
             )}
