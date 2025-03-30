@@ -8,7 +8,7 @@ import { useStateContext } from "@/context/StateContext";
 import { useRouter } from 'next/router';
 import StudyEvent from '@/components/StudyEvent';
 import Time from '@/utils/Time';
-import Date from '@/utils/Date';
+import CustomDate from '@/utils/CustomDate';
 
 
 export const Body = styled.main`
@@ -233,6 +233,8 @@ export default function MyEventsPage(){
         const q = query(
             collection(database, "events"),
             where("user.mail", "==", user.email),
+            orderBy("startTime.hour", "asc"),
+            orderBy("startTime.minute", "asc")
         );
 
         try {
@@ -286,7 +288,7 @@ export default function MyEventsPage(){
                     let am_eet = event.endTime.hour < 12 || event.endTime.hour == 24;
                     let et = new Time(hour_et, event.endTime.minute, am_eet);
 
-                    let edate = new Date(event.date.day, event.date.month, event.date.year);
+                    let edate = new CustomDate(event.date.day, event.date.month, event.date.year);
                     return(
                     <StudyEvent key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
                     )
@@ -393,7 +395,7 @@ export default function MyEventsPage(){
                             <FieldHeader>Description</FieldHeader>
                             <Description placeholder="Your plans for the session or goals you want to achieve." onChange={(e) => setDescription(e.target.value)}></Description>
                         </TextboxDiv>
-                        <SubmitButton  onClick={() => addEvent({date: {day: selectedDay, month: selectedMonth, year: selectedYear}, description: described, endTime: {hour: AM2 ? selectedHour2 : selectedHour2 + 12, minute: selectedMinute2}, location: located, startTime: {hour: AM1 ? selectedHour1 : selectedHour1 + 12, minute: selectedMinute1}, user: {displayName: user.displayName, mail: user.email}, course: courseCode})}>Create Event</SubmitButton>
+                        <SubmitButton  onClick={() => addEvent({date: {day: selectedDay, month: selectedMonth, year: selectedYear, dateCombined: (selectedYear * 10000) + (selectedMonth * 100) + selectedDay}, description: described, endTime: {hour: AM2 ? selectedHour2 : selectedHour2 + 12, minute: selectedMinute2}, location: located, startTime: {hour: AM1 ? selectedHour1 : selectedHour1 + 12, minute: selectedMinute1}, user: {displayName: user.displayName, mail: user.email}, course: courseCode})}>Create Event</SubmitButton>
                     </PopupContainer>
                 </Overlay>
             )}

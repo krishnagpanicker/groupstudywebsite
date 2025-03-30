@@ -1,10 +1,12 @@
 import NavBar from "@/components/Navbar";
 import { styled } from "styled-components";
 import { useStateContext } from "@/context/StateContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { collection, addDoc, getDocs, query, orderBy, where } from 'firebase/firestore';
+import { database } from '@/library/firebaseConfig';
 import StudyEvent from "@/components/StudyEvent"
 import Time from "@/utils/Time"
-import Date from "@/utils/Date"
+import CustomDate from "@/utils/CustomDate"
 
 const Body = styled.main`
     flex-direction: column !important; 
@@ -67,22 +69,70 @@ const EventList = styled.div`
 
 export default function Homepage(){
     const { user } = useStateContext();
-    let t1 = new Time(5,30,false);
-    let t2 = new Time(6,30,false);
-    let date = new Date(15,3,2025);
+    const [events, setEvents] = useState([]);
+    const [futureEvents, setFutureEvents] = useState([]);
+    const getFutureEvents = async () => {
+        const currentDate = new Date();
+        const currDateComb = (currentDate.getFullYear() * 10000) + ((currentDate.getMonth()+1) * 100) + currentDate.getDate();
+        console.log(currDateComb);
+        const x = query(
+            collection(database, "events"),
+            where("date.dateCombined", ">", currDateComb),
+            orderBy("date.year", "asc"),
+            orderBy("date.month", "asc"),
+            orderBy("date.day", "asc"),
+            orderBy("startTime.hour", "asc"),
+            orderBy("startTime.minute", "asc")
+        );
+        try {
+            const querySnap = await getDocs(x);
+            let eventTemp = [];
+            querySnap.forEach(doc => {
+                console.log(doc.id, doc.data());
+                eventTemp.push({ id: doc.id, ...doc.data() });
+            });
+            console.log("Temp events: ", eventTemp);
+            setFutureEvents(eventTemp);
+            console.log("Added events: ", futureEvents);
+        }
+        catch (error) {
+            console.error("Error retrieving data: ", error.message);
+        }
+    };
 
-    let t3 = new Time(4, 0, false);
-    let t4 = new Time(6, 0, false);
-    let date2 = new Date(16, 3, 2025);
-
-    let t5 = new Time(11, 15, true);
-    let t6 = new Time(12, 45, false);
-    let date3 = new Date(20, 3, 2025);
-
-    let t7 = new Time(3, 30, false);
-    let t8 = new Time(6, 30, false);
-    let date4 = new Date(22, 3, 2025);
-
+    const getSortedEvents = async () => {
+        const currentDate = new Date();
+        const q = query(
+            collection(database, "events"),
+            where("date.year", "==", currentDate.getFullYear()),
+            where("date.month", "==", currentDate.getMonth() + 1),
+            where("date.day", "==", currentDate.getDate()),
+            orderBy("startTime.hour", "asc"),
+            orderBy("startTime.minute", "asc")
+        );
+        try {
+            const querySnap = await getDocs(q);
+            let eventTemp = [];
+            querySnap.forEach(doc => {
+                console.log(doc.id, doc.data());
+                eventTemp.push({ id: doc.id, ...doc.data() });
+            });
+            console.log("Temp events: ", eventTemp);
+            setEvents(eventTemp);
+            console.log("Added events: ", events);
+        }
+        catch (error) {
+            console.error("Error retrieving data: ", error.message);
+        }
+    };
+    useEffect(() => {
+        if (!user || !user.email) {
+            console.log("bro dont exist");
+            return;
+        }
+        getSortedEvents();
+        getFutureEvents();
+    }, [user]);
     return(
         <> 
         <NavBar> </NavBar>
@@ -93,10 +143,20 @@ export default function Homepage(){
                     <Heading>Today's Events</Heading>
                     <Underline/>
                     <EventList>
-                        <StudyEvent timeStart={t1} timeEnd={t2} date={date} course="CMPEN 270" location="Haller 107"></StudyEvent>
-                        <StudyEvent timeStart={t3} timeEnd={t4} date={date2} course="MATH 141" location="McElwain Round Table"></StudyEvent>
-                        <StudyEvent timeStart={t5} timeEnd={t6} date={date3} course="PHIL 120N" location="Lyons Conference Room"></StudyEvent>
-                        <StudyEvent timeStart={t5} timeEnd={t6} date={date3} course="PHIL 120N" location="Lyons Conference Room"></StudyEvent>
+                        {events.map((event) => {
+                            let hour_st = event.startTime.hour > 12 ? event.startTime.hour - 12 : event.startTime.hour;
+                            let am_est = event.startTime.hour < 12 || event.startTime.hour == 24;
+                            let st = new Time(hour_st, event.startTime.minute, am_est);
+        
+                            let hour_et = event.endTime.hour > 12 ? event.endTime.hour - 12 : event.endTime.hour;
+                            let am_eet = event.endTime.hour < 12 || event.endTime.hour == 24;
+                            let et = new Time(hour_et, event.endTime.minute, am_eet);
+        
+                            let edate = new CustomDate(event.date.day, event.date.month, event.date.year);
+                            return(
+                            <StudyEvent key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
+                            )
+                        })}
                     </EventList>
                 </HContainer>   
             </ImgHContainer>
@@ -106,12 +166,22 @@ export default function Homepage(){
                     <Heading>Future Events</Heading>
                     <Underline/>
                     <EventList>
-                        <StudyEvent timeStart={t1} timeEnd={t2} date={date} course="CMPEN 270" location="Haller 107"></StudyEvent>
-                        <StudyEvent timeStart={t3} timeEnd={t4} date={date2} course="MATH 141" location="McElwain Round Table"></StudyEvent>
-                        <StudyEvent timeStart={t5} timeEnd={t6} date={date3} course="PHIL 120N" location="Lyons Conference Room"></StudyEvent>
-                        <StudyEvent timeStart={t5} timeEnd={t6} date={date3} course="PHIL 120N" location="Lyons Conference Room"></StudyEvent>
+                        {futureEvents.map((event) => {
+                            let hour_st = event.startTime.hour > 12 ? event.startTime.hour - 12 : event.startTime.hour;
+                            let am_est = event.startTime.hour < 12 || event.startTime.hour == 24;
+                            let st = new Time(hour_st, event.startTime.minute, am_est);
+        
+                            let hour_et = event.endTime.hour > 12 ? event.endTime.hour - 12 : event.endTime.hour;
+                            let am_eet = event.endTime.hour < 12 || event.endTime.hour == 24;
+                            let et = new Time(hour_et, event.endTime.minute, am_eet);
+        
+                            let edate = new CustomDate(event.date.day, event.date.month, event.date.year);
+                            return(
+                            <StudyEvent key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
+                            )
+                        })}
                     </EventList>
-                </HContainer>   
+                </HContainer>
             </ImgHContainer>    
         </Body>
         </>
