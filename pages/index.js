@@ -12,7 +12,7 @@ const Body = styled.main`
     font-family: "Geist",sans-serif;
     align-items:flex-start;
     padding: 30px;
-    gap: 100px;
+    gap: 50px;
 `;
 
 export const ImgHContainer = styled.div`
@@ -99,7 +99,10 @@ export default function Homepage(){
                     <Heading>Future Events</Heading>
                     <Underline/>
                     <EventList>
-                        
+                        <StudyEvent timeStart={t1} timeEnd={t2} date={date} course="CMPEN 270" location="Haller 107"></StudyEvent>
+                        <StudyEvent timeStart={t3} timeEnd={t4} date={date2} course="MATH 141" location="McElwain Round Table"></StudyEvent>
+                        <StudyEvent timeStart={t5} timeEnd={t6} date={date3} course="PHIL 120N" location="Lyons Conference Room"></StudyEvent>
+                        <StudyEvent timeStart={t5} timeEnd={t6} date={date3} course="PHIL 120N" location="Lyons Conference Room"></StudyEvent>
                     </EventList>
                 </HContainer>   
             </ImgHContainer>    
