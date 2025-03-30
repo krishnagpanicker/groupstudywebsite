@@ -204,7 +204,7 @@ export default function SearchGroupsPage(){
                         </CheckboxDiv>
                 </TextboxDiv>
                 <ButtonDiv>
-                    <Button type="button" onClick={getSortedEvents}>Filter</Button>
+                    <Button type="button" onClick={getSortedEvents}>Search</Button>
                     <Button type="button" onClick={() => {
                             setCourseFilter(false);
                             setEmailFilter(false);
