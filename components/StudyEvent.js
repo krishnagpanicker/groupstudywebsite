@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import Date from '@/utils/Date';
+import Date from '@/utils/CustomDate';
 import Time from '@/utils/Time';
 import Event from '@/utils/Event';
 import { useStateContext } from '@/context/StateContext';
