@@ -36,6 +36,13 @@ export const Heading = styled.h1`
     padding-bottom: 5px; 
 `;
 
+const WebsiteName = styled.h1`
+    font-size: 36px;
+    font-weight: 300;
+    color: white;
+    padding-bottom: 5px;
+`
+
 export const Underline = styled.hr`
     width: 75px; 
     height: 3px; 

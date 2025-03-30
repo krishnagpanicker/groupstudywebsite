@@ -3,6 +3,7 @@ import { useStateContext } from "@/context/StateContext";
 import Image from 'next/image';
 import { signOut } from "firebase/auth";
 import { auth } from "@/library/firebaseConfig";
+import { useRouter } from "next/router";
 
 const NavStyle = styled.nav`
     display: flex;
@@ -30,7 +31,8 @@ const LogoDiv = styled.div`
 
 const Logo = styled.img`
     width: 75px; 
-    height: auto; 
+    height: auto;
+    margin-right: 10px; 
     transition: transform 0.3s ease;
     &:hover {
         transform: scale(1.2);
@@ -111,13 +113,23 @@ const LogoutButton = styled.button`
     }
 `;
 
+const WebsiteName = styled.h1`
+    font-size: 25px;
+    font-weight: 600;
+    color: white;
+    padding-bottom: 5px;
+    padding-right: 20px;
+    border-right: 2px solid white;
+`
+
 export default function NavBar() {
     const { user } = useStateContext();
-
+    const router = useRouter();
     const handleLogout = async () => {
         try {
             setTimeout(() => {
                 signOut(auth);
+                router.push("/")
             }, 1000);
             console.log("User logged out succesfully.");
             user(null);
@@ -135,6 +147,7 @@ export default function NavBar() {
                     <Logo src="/images/logo.png" alt="Logo" />
                     </a>
                 </LogoDiv>
+                <WebsiteName>PSU GroupUp</WebsiteName>
                 <TabsDiv>
                     <PageHeader href="/searchgroups">Search Groups</PageHeader>
                     <PageHeader href="/myevents">My Events</PageHeader>
