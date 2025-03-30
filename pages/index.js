@@ -4,7 +4,7 @@ import { styled } from "styled-components";
 const Body = styled.main`
     flex-direction: column !important; 
     display: flex;
-    font-family: "Geist",sans-serif; s 
+    font-family: "Geist",sans-serif;
     align-items:flex-start;
     padding-left: 20px;
     padding-top: 30px;

@@ -95,7 +95,7 @@ export default function NavBar() {
                 <TabsDiv>
                     <PageHeader href="/searchgroups">Search Groups</PageHeader>
                     <PageHeader href="/myevents">My Events</PageHeader>
-                    <PageHeader href="/studybuddies">Study Buddies</PageHeader>
+                    <PageHeader href="/mystudybuddies">My Study Buddies</PageHeader>
                 </TabsDiv>
             </LeftDiv>
             <RightDiv>
