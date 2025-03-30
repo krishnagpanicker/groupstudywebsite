@@ -37,11 +37,11 @@ const EventText = styled.h1`
     margin-bottom: 10px;
 `
 
-export default function StudyEvent({ onClick, displayName, timeStart, timeEnd, date, course, location, members }){
+export default function StudyEvent({ onClick, displayName, timeStart, timeEnd, date, course, location, members, backgroundcolor }){
     const { user } = useStateContext();
-
+    console.log(backgroundcolor);
     return(
-        <EventBlock onClick={onClick}>
+        <EventBlock onClick={onClick} style={{ backgroundColor: backgroundcolor }}>
             <EventCourse>
                 {course}
             </EventCourse>

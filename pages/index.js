@@ -245,6 +245,49 @@ export default function Homepage(){
         getSortedEvents();
         getFutureEvents();
     }, [user]);
+    function getRand() {
+        return Math.floor(Math.random()*4);
+    }
+
+    function getR(randNum) {
+        if (randNum == 0) {
+            return 255;
+        }
+        else if (randNum == 1) {
+            return 169;
+        }
+        else if (randNum == 2) {
+            return 120;
+        }
+        return 45;
+    }
+
+    function getG(randNum) {
+        if (randNum == 0) {
+            return 242;
+        }
+        else if (randNum == 1) {
+            return 181;
+        }
+        else if (randNum == 2) {
+            return 134;
+        }
+        return 51;
+    }
+
+    function getB(randNum) {
+        if (randNum == 0) {
+            return 242;
+        }
+        else if (randNum == 1) {
+            return 223;
+        }
+        else if (randNum == 2) {
+            return 199;
+        }
+        return 107;
+    }
+
     return(
         <> 
         <NavBar> </NavBar>
@@ -263,10 +306,11 @@ export default function Homepage(){
                             let hour_et = event.endTime.hour > 12 ? event.endTime.hour - 12 : event.endTime.hour;
                             let am_eet = event.endTime.hour < 12 || event.endTime.hour == 24;
                             let et = new Time(hour_et, event.endTime.minute, am_eet);
-        
+    
+                            let rnum = getRand();
                             let edate = new CustomDate(event.date.day, event.date.month, event.date.year);
                             return(
-                            <StudyEvent onClick={() => attemptJoin(event)} key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
+                            <StudyEvent backgroundcolor={`rgba(${getR(rnum)}, ${getG(rnum)}, ${getB(rnum)}, ${0.5})`} onClick={() => attemptJoin(event)} key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
                             )
                         })}
                     </EventList>
@@ -301,10 +345,11 @@ export default function Homepage(){
                             let hour_et = event.endTime.hour > 12 ? event.endTime.hour - 12 : event.endTime.hour;
                             let am_eet = event.endTime.hour < 12 || event.endTime.hour == 24;
                             let et = new Time(hour_et, event.endTime.minute, am_eet);
-        
+    
+                            let rnum = getRand();
                             let edate = new CustomDate(event.date.day, event.date.month, event.date.year);
                             return(
-                            <StudyEvent onClick={() => attemptJoin(event)} key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
+                            <StudyEvent backgroundcolor={`rgba(${getR(rnum)}, ${getG(rnum)}, ${getB(rnum)}, ${0.5})`} onClick={() => attemptJoin(event)} key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
                             )
                         })}
                     </EventList>

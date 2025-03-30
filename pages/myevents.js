@@ -278,7 +278,20 @@ export default function MyEventsPage(){
         
         getSortedEvents();
     }, [user]);
-
+    let randNum = Math.floor(Math.random()*4);
+    let r, g, b;
+    if (randNum == 0) {
+        r = 255; g = 242; b = 242;
+    }
+    else if (randNum == 1) {
+        r = 169; g = 181; b = 223;
+    }
+    else if (randNum == 2) {
+        r = 120; g = 134; b = 199;
+    }
+    else {
+        r = 45; g = 51; b = 107;
+    }
     return(
     <>
     <NavBar> </NavBar>
@@ -311,7 +324,7 @@ export default function MyEventsPage(){
 
                     let edate = new CustomDate(event.date.day, event.date.month, event.date.year);
                     return(
-                    <StudyEvent key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
+                    <StudyEvent key={event.id} backgroundcolor={`rgba(${r}, ${g}, ${b}, ${0.2})`} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
                     )
                 })}
             </EventList> )}
