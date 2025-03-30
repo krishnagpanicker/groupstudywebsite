@@ -8,7 +8,7 @@ import { useStateContext } from "@/context/StateContext";
 import { useRouter } from 'next/router';
 
 
-export const Body = styled.main`
+const Body = styled.main`
     flex-direction: row !important; 
     display: flex;
     font-family: "Geist",sans-serif;
@@ -106,7 +106,7 @@ const InputTextbox = styled.input`
 `;
 
 const SelectorDiv = styled.div`
-    flex-direction: row !important; 
+    flex-direction: row !important;
     display: flex;
     gap: 10px;
     margin-top: 5px;
@@ -116,12 +116,12 @@ const Selector = styled.select`
     width: 12%;
     text-align: center;
 `
-export const Spacer = styled.h1`
+const Spacer = styled.h1`
     font-size: 15px;
 `
 
 const FieldHeader = styled.h1`
-    margin-top: 20px;
+    margin-top: 10px;
     align-self: flex-start;
     font-weight: 300;
     font-size: 15px;
@@ -270,9 +270,8 @@ export default function MyEventsPage(){
                                     <option value={9}>09</option>
                                     <option value={10}>10</option>
                                     <option value={11}>11</option>
-                                </Selector>
-                                <Colon>:</Colon>
-                                <Selector id="minute" value={minute} onChange={(e) => setMinute(e.target.value)}> 
+                                </Selector>                                
+                                <Selector id="minute2" value={selectedMinute2} onChange={(e) => setMinute2(e.target.value)}> 
                                     <option value={0}>00</option>
                                     <option value={15}>15</option>
                                     <option value={30}>30</option>
