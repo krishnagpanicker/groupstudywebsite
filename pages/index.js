@@ -11,9 +11,8 @@ const Body = styled.main`
     display: flex;
     font-family: "Geist",sans-serif;
     align-items:flex-start;
-    padding-left: 20px;
-    padding-top: 30px;
-    gap: 300px;
+    padding: 30px;
+    gap: 100px;
 `;
 
 export const ImgHContainer = styled.div`
@@ -28,6 +27,7 @@ export const HContainer = styled.div`
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
+    width: 100%;
 `;
 
 export const Heading = styled.h1`
@@ -49,11 +49,33 @@ const ImgIcon = styled.img`
     height: 50px; 
 `;
 
+const EventList = styled.div`
+    padding: 20px;
+    max-width: 80vw;
+    overflow-x: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+`;
+
 export default function Homepage(){
     const { user } = useStateContext();
     let t1 = new Time(5,30,false);
     let t2 = new Time(6,30,false);
     let date = new Date(15,3,2025);
+
+    let t3 = new Time(4, 0, false);
+    let t4 = new Time(6, 0, false);
+    let date2 = new Date(16, 3, 2025);
+
+    let t5 = new Time(11, 15, true);
+    let t6 = new Time(12, 45, false);
+    let date3 = new Date(20, 3, 2025);
+
+    let t7 = new Time(3, 30, false);
+    let t8 = new Time(6, 30, false);
+    let date4 = new Date(22, 3, 2025);
+
     return(
         <> 
         <NavBar> </NavBar>
@@ -63,7 +85,12 @@ export default function Homepage(){
                 <HContainer> 
                     <Heading>Today's Events</Heading>
                     <Underline/>
-                    <StudyEvent timeStart={t1} timeEnd={t2} date={date} course="CMPEN 270" location="Haller 107"></StudyEvent>
+                    <EventList>
+                        <StudyEvent timeStart={t1} timeEnd={t2} date={date} course="CMPEN 270" location="Haller 107"></StudyEvent>
+                        <StudyEvent timeStart={t3} timeEnd={t4} date={date2} course="MATH 141" location="McElwain Round Table"></StudyEvent>
+                        <StudyEvent timeStart={t5} timeEnd={t6} date={date3} course="PHIL 120N" location="Lyons Conference Room"></StudyEvent>
+                        <StudyEvent timeStart={t5} timeEnd={t6} date={date3} course="PHIL 120N" location="Lyons Conference Room"></StudyEvent>
+                    </EventList>
                 </HContainer>   
             </ImgHContainer>
             <ImgHContainer>
@@ -71,6 +98,9 @@ export default function Homepage(){
                 <HContainer> 
                     <Heading>Future Events</Heading>
                     <Underline/>
+                    <EventList>
+                        
+                    </EventList>
                 </HContainer>   
             </ImgHContainer>    
         </Body>

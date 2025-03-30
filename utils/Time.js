@@ -6,6 +6,6 @@ export default class Time {
     }
 
     toString() {
-        return `${this.hour}:${this.minute} ${this.am ? "AM" : "PM"}`;
+        return `${this.hour}:${(this.minute < 10) ? "0" + this.minute : this.minute} ${this.am ? "AM" : "PM"}`;
     }
 }
