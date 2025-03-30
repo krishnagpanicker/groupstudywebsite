@@ -21,7 +21,7 @@ export default function StudyEvent({ timeStart,timeEnd,date,course,location }){
                 {course}
             </EventCourse>
             <EventText>
-                {timeStart} to {timeEnd}w
+                {timeStart} to {timeEnd}
             </EventText>
         </EventBlock>
     )
