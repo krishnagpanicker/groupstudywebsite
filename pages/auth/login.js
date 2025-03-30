@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { auth } from '@/library/firebaseConfig.js';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useRouter } from 'next/router';
 
 const Form = styled.form`
@@ -120,13 +120,48 @@ const Redirect = styled.a`
     text-decoration: underline;
 `;
 
+const StatusText = styled.p`
+    font-size: 15px;
+    font-weight: 300;
+    color: red;
+`;
+
 export default function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [shown, setShown] = useState(false);
+    const [status, setStatus] = useState("");
+    const router = useRouter();
+
+    const verifyLogin = (event) => {
+        event.preventDefault();
+        console.log(email + " " + password);
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                setStatus("Log in succesful. Redirecting...");
+                setTimeout(() => {
+                    router.push("/");
+                } ,3000);
+                console.log("Log in succesful. ", userCredential.user);
+            })
+            .catch((error) => {
+                if (error.code === "auth/user-not-found") {
+                    setStatus("No account found with this email.");
+                    console.log("No account found with this email");
+                }
+                else if (error.code === "auth/wrong-password") {
+                    setStatus("Incorrect password.");
+                    console.log("Incorrect password");
+                }
+                else {
+                    setStatus("Error logging in.");
+                    console.log("Login failed: ", error.message);
+                }
+            });
+    };
 
     return (
-        <Form>
+        <Form onSubmit={verifyLogin}>
             <Heading>Login to your account</Heading>
             <hr style={{ border: "1px solid #E4E0E1", width: "100%", margin: "10px 0px 10px 0px" }}/>
             <FieldHeader>PSU Email</FieldHeader>
@@ -137,6 +172,7 @@ export default function Signup() {
                 <Show type="checkbox" checked={shown} onChange={() => setShown(!shown)}></Show>
                 <ShowText>Show Password</ShowText>
             </ShowContainer>
+            <StatusText>{ status }</StatusText>
             <Submit type="submit">Login</Submit>
             <LoginTextContainer>
                 <LoginText>Don't have an account yet? <Redirect href="/auth/signup">Create an account now</Redirect>.</LoginText>

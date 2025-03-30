@@ -1,6 +1,7 @@
 import NavBar from "@/components/Navbar";
 import { styled } from "styled-components";
 import { HContainer,Heading,Underline,ImgIcon,ImgHContainer } from "/";
+import { useStateContext } from "@/context/StateContext";
 
 const Body = styled.main`
     flex-direction: row !important; 

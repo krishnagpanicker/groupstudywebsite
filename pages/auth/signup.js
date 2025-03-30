@@ -135,7 +135,6 @@ const StatusText = styled.p`
     font-size: 15px;
     font-weight: 300;
     color: red;
-
 `;
 
 export default function Signup() {

@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { createGlobalStyle } from "styled-components";
+import { StateContext } from "@/context/StateContext";
 
 const GlobalStyle = createGlobalStyle`
     * {
@@ -10,7 +11,7 @@ const GlobalStyle = createGlobalStyle`
 
 export default function App({ Component, pageProps }) {
   return (
-    <>
+    <StateContext>
         <Head>
             <title>PSU Group Study</title>
             <meta name='description' content='Study group finder to help you meet fellow Penn State study buddies.'></meta>
@@ -19,6 +20,6 @@ export default function App({ Component, pageProps }) {
         </Head>
         <GlobalStyle/>
         <Component {...pageProps}/>
-    </> 
+    </StateContext> 
   );
 }

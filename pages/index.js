@@ -1,5 +1,7 @@
 import NavBar from "@/components/Navbar";
 import { styled } from "styled-components";
+import { useStateContext } from "@/context/StateContext";
+import { useState } from "react";
 
 const Body = styled.main`
     flex-direction: column !important; 
@@ -45,6 +47,7 @@ export const ImgIcon = styled.img`
 `;
 
 export default function Homepage(){
+    const { user } = useStateContext();
     return(
         <> 
         <NavBar> </NavBar>

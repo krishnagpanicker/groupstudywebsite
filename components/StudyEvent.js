@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import Date from '@/utils/Date';
+import Time from '@/utils/Time';
+import Event from '@/utils/Event';
 
 const EventBlock = styled.div`
     flex-direction: column !important; 

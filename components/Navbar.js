@@ -1,4 +1,8 @@
 import styled from "styled-components";
+import { useStateContext } from "@/context/StateContext";
+import Image from 'next/image';
+import { signOut } from "firebase/auth";
+import { auth } from "@/library/firebaseConfig";
 
 const NavStyle = styled.nav`
     display: flex;
@@ -67,6 +71,18 @@ const AccountDiv = styled.div`
     gap: 30px;
 `;
 
+const LoggedInDiv = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+`;
+
+const Name = styled.p`
+    font-size: 16px;
+    color: white;
+`;
+
 const SignUpBox = styled.div`
     color: white; 
     background-color: #006BFF;
@@ -83,7 +99,34 @@ const SignUpBox = styled.div`
     }
 `;
 
+const LogoutButton = styled.button`
+    background-color: #0c0950;
+    border: 0px;
+    color: white;
+    font-size: 16px;
+    transition: font-size 0.3s ease;
+
+    &:hover {
+        font-size: 18px;
+    }
+`;
+
 export default function NavBar() {
+    const { user } = useStateContext();
+
+    const handleLogout = async () => {
+        try {
+            setTimeout(() => {
+                signOut(auth);
+            }, 2000);
+            console.log("User logged out succesfully.");
+            user(null);
+        }
+        catch (error) {
+            console.error("Error logging out: ", error.message);
+        }
+    };
+
     return (
         <NavStyle>
             <LeftDiv>
@@ -99,12 +142,22 @@ export default function NavBar() {
                 </TabsDiv>
             </LeftDiv>
             <RightDiv>
-                <AccountDiv>
-                    <PageHeader href="/auth/login">Log In</PageHeader>
-                    <SignUpBox>
-                        <PageHeader href="/auth/signup">Sign Up</PageHeader>
-                    </SignUpBox>
-                </AccountDiv>
+                { user ? (
+                    <LoggedInDiv>
+                        <LogoutButton onClick={handleLogout}>Log Out</LogoutButton>
+                        <Image src="/images/notification.png" height={45} width={45}/>
+                        <Image src={user.photoURL} height={45} width={45}/>
+                        <Name>{user.displayName}</Name>
+                    </LoggedInDiv>
+                    ) : (
+                    <AccountDiv>
+                        <PageHeader href="/auth/login">Log In</PageHeader>
+                        <SignUpBox>
+                            <PageHeader href="/auth/signup">Sign Up</PageHeader>
+                        </SignUpBox>
+                    </AccountDiv>    
+                    )
+                }
             </RightDiv>
         </NavStyle>
     );
