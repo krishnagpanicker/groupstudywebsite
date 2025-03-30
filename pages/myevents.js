@@ -8,7 +8,7 @@ import { useStateContext } from "@/context/StateContext";
 import { useRouter } from 'next/router';
 
 
-const Body = styled.main`
+export const Body = styled.main`
     flex-direction: row !important; 
     display: flex;
     font-family: "Geist",sans-serif;
@@ -104,7 +104,7 @@ const InputTextbox = styled.input`
     width: 100%;
 `;
 
-const SelectorDiv = styled.div`
+export const SelectorDiv = styled.div`
     flex-direction: row !important;
     display: flex;
     gap: 10px;
@@ -115,11 +115,11 @@ const Selector = styled.select`
     width: 12%;
     text-align: center;
 `
-const Spacer = styled.h1`
+export const Spacer = styled.h1`
     font-size: 15px;
 `
 
-const FieldHeader = styled.h1`
+export const FieldHeader = styled.h1`
     margin-top: 10px;
     align-self: flex-start;
     font-weight: 300;
