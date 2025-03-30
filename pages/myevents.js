@@ -3,9 +3,12 @@ import { styled } from "styled-components";
 import { HContainer,Heading,Underline,ImgHContainer } from "/";
 import React, { useState, useEffect, useRef } from "react";
 import { auth, database } from '@/library/firebaseConfig';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, where } from 'firebase/firestore';
 import { useStateContext } from "@/context/StateContext";
 import { useRouter } from 'next/router';
+import StudyEvent from '@/components/StudyEvent';
+import Time from '@/utils/Time';
+import Date from '@/utils/Date';
 
 
 export const Body = styled.main`
@@ -26,8 +29,8 @@ const MyEventBody = styled.main`
 const EventBorder = styled.div`
     width: 0; 
     height: 100vh; 
-    border-right: 2px solid black;
-    margin-left: 200px;
+    border-right: 1px solid black;
+    margin-left: 30px;
 `
 
 const NewEvent = styled.button`
@@ -154,20 +157,29 @@ const Description = styled.textarea`
     width: 100%;
 `;
 
+const EventList = styled.div`
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    gap: 20px;
+    max-height: 60vh;
+    padding: 20px;
+`;
+
 export default function MyEventsPage(){
     const { user } = useStateContext();
     const overRef = useRef(null);
+    const [events, setEvents] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [courseCode, setCourse] = useState("");
     const [located, setLocation] = useState("");
     const [described, setDescription] = useState("");
     const [selectedHour1, setHour1] = useState(12);
     const [selectedMinute1, setMinute1] = useState(0);
-    const [AM1, setAM1] = useState("AM");
+    const [AM1, setAM1] = useState(true);
     const [selectedHour2, setHour2] = useState(12);
     const [selectedMinute2, setMinute2] = useState(0);
-    const [AM2, setAM2] = useState("AM");
-    const router = useRouter();
+    const [AM2, setAM2] = useState(true);
 
     const [selectedMonth, setMonth] = useState(1);
     const [selectedYear, setYear] = useState(2025);
@@ -197,10 +209,38 @@ export default function MyEventsPage(){
         try {
             const docRef = await addDoc(collection(database, "events"), eventData);
             overRef.current.click();
+            console.log("After creation events: ", events);
+            await getSortedEvents();
             console.log("Event added with ID: ", docRef.id);
         }
         catch (error) {
             console.error("Error adding event: ", error.message);
+        }
+    };
+
+    let t1 = new Time(5,30,false);
+    let t2 = new Time(6,30,false);
+    let date = new Date(15,3,2025);
+
+    const getSortedEvents = async () => {
+        const q = query(
+            collection(database, "events"),
+            where("user.mail", "==", user.email),
+        );
+
+        try {
+            const querySnap = await getDocs(q);
+            let eventTemp = [];
+            querySnap.forEach(doc => {
+                console.log(doc.id, doc.data());
+                eventTemp.push({ id: doc.id, ...doc.data() });
+            });
+            console.log("Temp events: ", eventTemp);
+            setEvents(eventTemp);
+            console.log("Added events: ", events);
+        }
+        catch (error) {
+            console.error("Error retrieving data: ", error.message);
         }
     };
 
@@ -216,6 +256,24 @@ export default function MyEventsPage(){
                     <Underline/>
                 </HContainer>
             </ImgHContainer>
+            <EventList>
+                {events.map((event) => {
+                    
+                    console.log(event.startTime.hour + " to " + event.endTime.hour);
+                    let hour_st = event.startTime.hour > 12 ? event.startTime.hour - 12 : event.startTime.hour;
+                    let am_est = event.startTime.hour < 12 || event.startTime.hour == 24;
+                    let st = new Time(hour_st, event.startTime.minute, am_est);
+
+                    let hour_et = event.endTime.hour > 12 ? event.endTime.hour - 12 : event.endTime.hour;
+                    let am_eet = event.endTime.hour < 12 || event.endTime.hour == 24;
+                    let et = new Time(hour_et, event.endTime.minute, am_eet);
+
+                    let edate = new Date(event.date.day, event.date.month, event.date.year);
+                    return(
+                    <StudyEvent key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
+                    )
+                })}
+            </EventList>
         </MyEventBody>
         <CreateEventDiv>
             <NewEvent onClick={() => setIsOpen(true)}>
@@ -231,7 +289,7 @@ export default function MyEventsPage(){
                             <InputTextbox type="text" placeholder="e.g. CMPEN 270" onChange={(e) => setCourse(e.target.value)}></InputTextbox>
                             <FieldHeader>Time</FieldHeader>
                             <SelectorDiv>
-                                <Selector id="hour1" value={selectedHour1} onChange={(e) => setHour1(e.target.value)}> 
+                                <Selector id="hour1" value={selectedHour1} onChange={(e) => setHour1(parseInt(e.target.value, 10))}> 
                                     <option value={12}>12</option>
                                     <option value={1}>01</option>
                                     <option value={2}>02</option>
@@ -245,18 +303,18 @@ export default function MyEventsPage(){
                                     <option value={10}>10</option>
                                     <option value={11}>11</option>
                                 </Selector>                                
-                                <Selector id="minute1" value={selectedMinute1} onChange={(e) => setMinute1(e.target.value)}> 
+                                <Selector id="minute1" value={selectedMinute1} onChange={(e) => setMinute1(parseInt(e.target.value, 10))}> 
                                     <option value={0}>00</option>
                                     <option value={15}>15</option>
                                     <option value={30}>30</option>
                                     <option value={45}>45</option>
                                 </Selector>
-                                <Selector id="AM_PM1" value={AM1} onChange={(e) => setAM1(e.target.value)}> 
-                                    <option value={"AM"}>AM</option>
-                                    <option value={"PM"}>PM</option>
+                                <Selector id="AM_PM1" value={AM1} onChange={(e) => setAM1(e.target.value == "true")}> 
+                                    <option value={true}>AM</option>
+                                    <option value={false}>PM</option>
                                 </Selector>
                                 <Spacer>to</Spacer>
-                                <Selector id="hour2" value={selectedHour2} onChange={(e) => setHour2(e.target.value)}> 
+                                <Selector id="hour2" value={selectedHour2} onChange={(e) => setHour2(parseInt(e.target.value, 10))}> 
                                     <option value={12}>12</option>
                                     <option value={1}>01</option>
                                     <option value={2}>02</option>
@@ -270,41 +328,41 @@ export default function MyEventsPage(){
                                     <option value={10}>10</option>
                                     <option value={11}>11</option>
                                 </Selector>                                
-                                <Selector id="minute2" value={selectedMinute2} onChange={(e) => setMinute2(e.target.value)}> 
+                                <Selector id="minute2" value={selectedMinute2} onChange={(e) => setMinute2(parseInt(e.target.value, 10))}> 
                                     <option value={0}>00</option>
                                     <option value={15}>15</option>
                                     <option value={30}>30</option>
                                     <option value={45}>45</option>
                                 </Selector>
-                                <Selector id="AM_PM2" value={AM2} onChange={(e) => setAM2(e.target.value)}> 
-                                    <option value={"AM"}>AM</option>
-                                    <option value={"PM"}>PM</option>
+                                <Selector id="AM_PM2" value={AM2} onChange={(e) => setAM2(e.target.value == "true")}> 
+                                    <option value={true}>AM</option>
+                                    <option value={false}>PM</option>
                                 </Selector>
                             </SelectorDiv>
                             <FieldHeader>Date</FieldHeader>
                             <SelectorDiv>
-                                <Selector id="month" value={selectedMonth} onChange={(e) => setMonth(e.target.value)}>
-                                    <option value={1}>January</option>
-                                    <option value={2}>February</option>
-                                    <option value={3}>March</option>
-                                    <option value={4}>April</option>
+                                <Selector id="month" value={selectedMonth} onChange={(e) => setMonth(parseInt(e.target.value, 10))}>
+                                    <option value={1}>Jan</option>
+                                    <option value={2}>Feb</option>
+                                    <option value={3}>Mar</option>
+                                    <option value={4}>Apr</option>
                                     <option value={5}>May</option>
-                                    <option value={6}>June</option>
-                                    <option value={7}>July</option>
-                                    <option value={8}>August</option>
-                                    <option value={9}>September</option>
-                                    <option value={10}>October</option>
-                                    <option value={11}>November</option>
-                                    <option value={12}>December</option>
+                                    <option value={6}>Jun</option>
+                                    <option value={7}>Jul</option>
+                                    <option value={8}>Aug</option>
+                                    <option value={9}>Sep</option>
+                                    <option value={10}>Oct</option>
+                                    <option value={11}>Nov</option>
+                                    <option value={12}>Dec</option>
                                 </Selector>
                                 <Spacer>/</Spacer>
-                                <Selector id="day" value={selectedDay} onChange={(e) => setDay(e.target.value)}>
+                                <Selector id="day" value={selectedDay} onChange={(e) => setDay(parseInt(e.target.value, 10))}>
                                     {daysInMonth.map((day) => (
                                         <option key={day} value={day}>{day}</option>
                                     ))}
                                 </Selector>
                                 <Spacer>/</Spacer>
-                                <Selector id="year" value={selectedYear} onChange={(e) => setYear(e.target.value)}>
+                                <Selector id="year" value={selectedYear} onChange={(e) => setYear(parseInt(e.target.value, 10))}>
                                     <option value={2025}>2025</option>
                                     <option value={2026}>2026</option>
                                     <option value={2027}>2027</option>
@@ -317,7 +375,7 @@ export default function MyEventsPage(){
                             <FieldHeader>Description</FieldHeader>
                             <Description placeholder="Your plans for the session or goals you want to achieve." onChange={(e) => setDescription(e.target.value)}></Description>
                         </TextboxDiv>
-                        <SubmitButton  onClick={() => addEvent({date: {day: selectedDay, month: selectedMonth, year: selectedYear}, description: described, endTime: {am: AM2, hour: selectedHour2, minute: selectedMinute2}, location: located, startTime: {am: AM1, hour: selectedHour1, minute: selectedMinute1}, user: {displayName: user.displayName, mail: user.email}})}>Create Event</SubmitButton>
+                        <SubmitButton  onClick={() => addEvent({date: {day: selectedDay, month: selectedMonth, year: selectedYear}, description: described, endTime: {hour: AM2 ? selectedHour2 : selectedHour2 + 12, minute: selectedMinute2}, location: located, startTime: {hour: AM1 ? selectedHour1 : selectedHour1 + 12, minute: selectedMinute1}, user: {displayName: user.displayName, mail: user.email}, course: courseCode})}>Create Event</SubmitButton>
                     </PopupContainer>
                 </Overlay>
             )}
