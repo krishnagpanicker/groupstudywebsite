@@ -62,6 +62,7 @@ const Selector = styled.select`
     text-align: center;
 `
 
+
 export default function SearchGroupsPage(){
     const { user } = useStateContext();
     const [isOpen, setIsOpen] = useState(false);
@@ -112,8 +113,12 @@ export default function SearchGroupsPage(){
                     </HContainer>
                 </ImgHContainer>
                 <TextboxDiv> 
+                    <FieldHeader>Event Creator Name</FieldHeader>
+                    <InputTextbox type="text" placeholder="e.g. Kanye West"></InputTextbox>
                     <FieldHeader>Course Name</FieldHeader>
                     <InputTextbox type="text" placeholder="e.g. CMPEN 270"></InputTextbox>
+                    <FieldHeader>Location</FieldHeader>
+                    <InputTextbox type="text" placeholder="e.g. Haller 107" onChange={(e) => setLocation(e.target.value)}></InputTextbox>
                     <FieldHeader>Time</FieldHeader>
                             <SelectorDiv>
                                 <Selector id="hour1" value={selectedHour1} onChange={(e) => setHour1(e.target.value)}> 
@@ -169,18 +174,18 @@ export default function SearchGroupsPage(){
                             <FieldHeader>Date</FieldHeader>
                             <SelectorDiv>
                                 <Selector id="month" value={selectedMonth} onChange={(e) => setMonth(e.target.value)}>
-                                    <option value={1}>January</option>
-                                    <option value={2}>February</option>
-                                    <option value={3}>March</option>
-                                    <option value={4}>April</option>
+                                    <option value={1}>Jan</option>
+                                    <option value={2}>Feb</option>
+                                    <option value={3}>Mar</option>
+                                    <option value={4}>Apr</option>
                                     <option value={5}>May</option>
-                                    <option value={6}>June</option>
-                                    <option value={7}>July</option>
-                                    <option value={8}>August</option>
-                                    <option value={9}>September</option>
-                                    <option value={10}>October</option>
-                                    <option value={11}>November</option>
-                                    <option value={12}>December</option>
+                                    <option value={6}>Jun</option>
+                                    <option value={7}>Jul</option>
+                                    <option value={8}>Augt</option>
+                                    <option value={9}>Sepr</option>
+                                    <option value={10}>Oct</option>
+                                    <option value={11}>Nov</option>
+                                    <option value={12}>Dec</option>
                                 </Selector>
                                 <Spacer>/</Spacer>
                                 <Selector id="day" value={selectedDay} onChange={(e) => setDay(e.target.value)}>
@@ -197,8 +202,6 @@ export default function SearchGroupsPage(){
                                     <option value={2029}>2029</option>
                                 </Selector>
                             </SelectorDiv>
-                            <FieldHeader>Location</FieldHeader>
-                            <InputTextbox type="text" placeholder="e.g. Haller 107" onChange={(e) => setLocation(e.target.value)}></InputTextbox>
                 </TextboxDiv>
             </MySearchBody>
             
