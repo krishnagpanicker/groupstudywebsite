@@ -5,6 +5,10 @@ import { Body,FieldHeader,SelectorDiv,Spacer } from ".//myevents";
 import React, { useState, useEffect, useRef } from "react";
 import { useStateContext } from "@/context/StateContext";
 import { collection, addDoc, getDocs, query, orderBy, where } from 'firebase/firestore';
+import { database } from "@/library/firebaseConfig"
+import Time from '@/utils/Time';
+import CustomDate from '@/utils/CustomDate';
+import StudyEvent from '@/components/StudyEvent';
 
 const MySearchBody = styled.main`
     flex-direction: column !important; 
@@ -101,9 +105,11 @@ const EventList = styled.div`
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     overflow-y: auto;
-    gap: 20px;
+    margin: 0px auto;
     max-height: 60vh;
+    gap: 75px;
     padding: 20px;
+    margin-top: 20px;
 `
 
 export default function SearchGroupsPage(){
@@ -149,6 +155,25 @@ export default function SearchGroupsPage(){
         }
     }
 
+    const displayAll = async () => {
+        let q = collection(database, "events");
+
+        try {
+            const querySnap = await getDocs(q);
+            let eventTemp = [];
+            querySnap.forEach(doc => {
+                console.log(doc.id, doc.data());
+                eventTemp.push({ id: doc.id, ...doc.data() });
+            });
+            console.log("Temp events: ", eventTemp);
+            setEvents(eventTemp);
+            console.log("Added events: ", events);
+        }
+        catch (error) {
+            console.error("Error retrieving data: ", error.message);
+        }
+    }
+
     return(
         <>
         <NavBar> </NavBar>
@@ -165,12 +190,12 @@ export default function SearchGroupsPage(){
                     <FieldHeader>Event Creator Email</FieldHeader>
                         <CheckboxDiv>
                             <InputTextbox type="text" placeholder="e.g. srk1515@psu.edu" value={eventCreator} onChange={(e) => setEventCreator(e.target.value)}></InputTextbox>
-                            <Checkbox type="checkbox" checked={emailFilter} onChange={() => setCourseFilter(!emailFilter)}/>
+                            <Checkbox type="checkbox" checked={emailFilter} onChange={() => setEmailFilter(!emailFilter)}/>
                         </CheckboxDiv>
                     <FieldHeader>Course Name</FieldHeader>
                         <CheckboxDiv>
                             <InputTextbox type="text" placeholder="e.g. CMPEN 270" value={courseName} onChange={(e) => setCourseName(e.target.value)}></InputTextbox>
-                            <Checkbox type="checkbox" checked={courseFilter} onChange={() => setEmailFilter(!courseFilter)}/>
+                            <Checkbox type="checkbox" checked={courseFilter} onChange={() => setCourseFilter(!courseFilter)}/>
                         </CheckboxDiv>
                     <FieldHeader>Location</FieldHeader>
                         <CheckboxDiv>
@@ -183,7 +208,8 @@ export default function SearchGroupsPage(){
                     <Button type="button" onClick={() => {
                             setCourseFilter(false);
                             setEmailFilter(false);
-                            setLocationFilter(false)
+                            setLocationFilter(false);
+                            displayAll();
                             }}> Reset </Button>
                 </ButtonDiv>
             </MySearchBody> 
@@ -200,7 +226,7 @@ export default function SearchGroupsPage(){
                     let am_eet = event.endTime.hour < 12 || event.endTime.hour == 24;
                     let et = new Time(hour_et, event.endTime.minute, am_eet);
 
-                    let edate = new Date(event.date.day, event.date.month, event.date.year);
+                    let edate = new CustomDate(event.date.day, event.date.month, event.date.year);
                     return(
                     <StudyEvent key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
                     )
