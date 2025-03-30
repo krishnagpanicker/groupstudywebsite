@@ -37,11 +37,11 @@ const EventText = styled.h1`
     margin-bottom: 10px;
 `
 
-export default function StudyEvent({ displayName, timeStart, timeEnd, date, course, location }){
+export default function StudyEvent({ onClick, displayName, timeStart, timeEnd, date, course, location, members }){
     const { user } = useStateContext();
 
     return(
-        <EventBlock>
+        <EventBlock onClick={onClick}>
             <EventCourse>
                 {course}
             </EventCourse>

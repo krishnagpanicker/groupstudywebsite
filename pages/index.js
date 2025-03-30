@@ -1,8 +1,8 @@
 import NavBar from "@/components/Navbar";
 import { styled } from "styled-components";
 import { useStateContext } from "@/context/StateContext";
-import { useState, useEffect } from "react";
-import { collection, addDoc, getDocs, query, orderBy, where } from 'firebase/firestore';
+import { useState, useEffect, useRef } from "react";
+import { collection, addDoc, getDocs, query, orderBy, where, updateDoc, doc, arrayUnion } from 'firebase/firestore';
 import { database } from '@/library/firebaseConfig';
 import StudyEvent from "@/components/StudyEvent"
 import Time from "@/utils/Time"
@@ -67,8 +67,79 @@ const EventList = styled.div`
     gap: 20px;
 `;
 
+const JoinPopup = styled.div`
+    background: white;
+    width: 50%;
+    height: 60%;
+    max-width: 500px;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    margin: 100px auto;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+`;
+
+const Overlay = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); // Semi-transparent background
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+`;
+
+const CourseHeading = styled.p`
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 10px;
+`;
+
+const CourseText = styled.p`
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: 300;
+`;
+
+const JoinButton = styled.button`
+    width: 100%;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 15px 0px;
+    background-color: #0c0950;
+    color: white;
+    border: 0px solid black;
+    border-radius: 30px;
+    margin-top: auto;
+    transition: background-color 0.5s ease;
+
+    &:hover {
+        background-color: #4D55CC;
+    }
+`;
+
+const PopupStatus = styled.p`
+    color: red;
+    font-size: 25px;
+    font-weight: 400;
+    text-align: center;
+    align-self: center;
+    margin-top: auto;
+`;
+
 export default function Homepage(){
     const { user } = useStateContext();
+    const overRef = useRef(null);
+    const [popupContent, setPopupContent] = useState(null);
+    const [joinAttempted, tryJoin] = useState(false);
+    const [clickedEvent, clickEvent] = useState(null);
     const [events, setEvents] = useState([]);
     const [futureEvents, setFutureEvents] = useState([]);
     const getFutureEvents = async () => {
@@ -99,6 +170,44 @@ export default function Homepage(){
             console.error("Error retrieving data: ", error.message);
         }
     };
+    
+    function attemptJoin(event) {
+        let updateUser = {
+            id: user.id || "defaultID",
+            email: user.email,
+            displayName: user.displayName
+        }
+        tryJoin(true);
+        let flag = false;
+        let tempContent = <JoinButton onClick={() => updateField(event.id, updateUser)} type="button">Join Event</JoinButton>;
+        if (event.user.mail == user.email) {
+            console.log("L bru");
+            tempContent = <PopupStatus>Unable to join your own event.</PopupStatus>
+            flag = true;
+        }
+        if (event.members.length == 3) {
+            console.log("too many man");
+            tempContent = <PopupStatus>Event is full, unable to join.</PopupStatus>
+            flag = true;
+        }
+        setPopupContent(tempContent);
+        clickEvent(event);
+        if (flag) {
+            return;
+        }
+        const updateField = async (documentID, newUser) => {
+            try {
+                const docRef = doc(database, "events", documentID);
+                await updateDoc(docRef, {
+                    members: arrayUnion(newUser)
+                });
+            }
+            catch (error) {
+                console.error("Error joining event: ", error.message);
+            }
+        };
+        console.log("Tried join.");
+    }
 
     const getSortedEvents = async () => {
         const currentDate = new Date();
@@ -154,11 +263,26 @@ export default function Homepage(){
         
                             let edate = new CustomDate(event.date.day, event.date.month, event.date.year);
                             return(
-                            <StudyEvent key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
+                            <StudyEvent onClick={() => attemptJoin(event)} key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
                             )
                         })}
                     </EventList>
-                </HContainer>   
+                    
+                </HContainer>
+                {joinAttempted && (
+                    <Overlay ref={overRef} onClick={() => tryJoin(!joinAttempted)}>
+                        <JoinPopup>
+                            <CourseHeading>{clickedEvent.course}</CourseHeading>
+                            <CourseText>Creator: {clickedEvent.user.displayName}</CourseText>
+                            <CourseText>Time: {clickedEvent.startTime.hour > 12 ? clickedEvent.startTime.hour - 12 : clickedEvent.startTime.hour}:{clickedEvent.startTime.minute < 10 ? "0" + clickedEvent.startTime.minute : clickedEvent.startTime.minute} {(clickedEvent.startTime.hour < 12 || clickedEvent.startTime.hour == 24) ? "AM" : "PM"} to {clickedEvent.endTime.hour > 12 ? clickedEvent.endTime.hour - 12 : clickedEvent.endTime.hour}:{clickedEvent.endTime.minute < 10 ? "0" + clickedEvent.endTime.minute : clickedEvent.endTime.minute} {(clickedEvent.endTime.hour < 12 || clickedEvent.endTime.hour == 24) ? "AM" : "PM"}</CourseText>
+                            <CourseText>Date: {clickedEvent.date.month}/{clickedEvent.date.day}/{clickedEvent.date.year}</CourseText>
+                            <CourseText>Location: {clickedEvent.location}</CourseText>
+                            <CourseText>Description: {clickedEvent.description}</CourseText>
+                            <CourseText>Members: {(clickedEvent.members.length == 0) ? "None" : clickedEvent.members.map(item => item.displayName).join(", ")}</CourseText>
+                            {popupContent}
+                        </JoinPopup>
+                    </Overlay>
+                )}    
             </ImgHContainer>
             <ImgHContainer>
                 <ImgIcon src="/images/calender2.png" alt="Logo" />
@@ -177,7 +301,7 @@ export default function Homepage(){
         
                             let edate = new CustomDate(event.date.day, event.date.month, event.date.year);
                             return(
-                            <StudyEvent key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
+                            <StudyEvent onClick={() => attemptJoin(event)} key={event.id} displayName={event.user.displayName} timeStart={st} timeEnd={et} date={edate} course={event.course} location={event.location}></StudyEvent>
                             )
                         })}
                     </EventList>

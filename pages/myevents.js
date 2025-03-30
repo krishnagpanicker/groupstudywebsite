@@ -258,9 +258,6 @@ export default function MyEventsPage(){
             console.error("Error retrieving data: ", error.message);
         }
     }
-    let t1 = new Time(5,30,false);
-    let t2 = new Time(6,30,false);
-    let date = new Date(15,3,2025);
     useEffect(() => {
         if (!user || !user.email) {
             console.log("bro dont exist");
