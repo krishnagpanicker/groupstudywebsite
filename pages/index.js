@@ -2,6 +2,9 @@ import NavBar from "@/components/Navbar";
 import { styled } from "styled-components";
 import { useStateContext } from "@/context/StateContext";
 import { useState } from "react";
+import StudyEvent from "@/components/StudyEvent"
+import Time from "@/utils/Time"
+import Date from "@/utils/Date"
 
 const Body = styled.main`
     flex-direction: column !important; 
@@ -41,13 +44,16 @@ export const Underline = styled.hr`
     margin: 5px 0; 
 `;
 
-export const ImgIcon = styled.img`
+const ImgIcon = styled.img`
     width: 50px; 
     height: 50px; 
 `;
 
 export default function Homepage(){
     const { user } = useStateContext();
+    let t1 = new Time(5,30,false);
+    let t2 = new Time(6,30,false);
+    let date = new Date(15,3,2025);
     return(
         <> 
         <NavBar> </NavBar>
@@ -57,6 +63,7 @@ export default function Homepage(){
                 <HContainer> 
                     <Heading>Today's Events</Heading>
                     <Underline/>
+                    <StudyEvent timeStart={t1} timeEnd={t2} date={date} course="CMPEN 270" location="Haller 107"></StudyEvent>
                 </HContainer>   
             </ImgHContainer>
             <ImgHContainer>
