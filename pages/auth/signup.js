@@ -152,7 +152,7 @@ export default function Signup() {
         if(email.substring(email.length-8, email.length) != "@psu.edu") {
             console.log("Ending: ", email.substring(email.length-8, email.length));
             setStatus("Incorrect email format.");
-            return;
+            return
         }
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {

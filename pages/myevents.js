@@ -1,15 +1,14 @@
 import NavBar from "@/components/Navbar";
 import { styled } from "styled-components";
 import { HContainer,Heading,Underline,ImgHContainer } from "/";
-import { useStateContext } from "@/context/StateContext";
 import React, { useState } from "react";
+
 
 const Body = styled.main`
     flex-direction: row !important; 
     display: flex;
     font-family: "Geist",sans-serif;
     align-items:flex-start;
-    gap: 300px;
 `
 
 const MyEventBody = styled.main`
@@ -24,6 +23,7 @@ const EventBorder = styled.div`
     width: 0; 
     height: 100vh; 
     border-right: 2px solid black;
+    margin-left: 200px;
 `
 
 const NewEvent = styled.button`
@@ -73,6 +73,7 @@ const Overlay = styled.div`
 const PopupContainer = styled.div`
   background: white;
   width: 50%;
+  height: 70vh;
   max-width: 500px;
   padding: 20px;
   border-radius: 10px;
@@ -81,8 +82,53 @@ const PopupContainer = styled.div`
   z-index: 1001;
 `;
 
+const TextboxDiv = styled.div`
+    flex-direction: column !important; 
+    display: flex;
+`
+
+const PopUpHeader = styled.h1`
+    text-align: center;
+`
+
+const InputTextbox = styled.input`
+    margin: 5px auto;
+    border: 1px solid #E4E0E1;
+    border-radius: 3px;
+    height: 24px;
+    font-size: 15px;
+    padding: 2px;
+    width: 100%;
+    margin-bottom: 15px;
+`;
+
+const SelectorDiv = styled.div`
+    flex-direction: row !important; 
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+`
+
+const Selector = styled.select`
+    width: 10%;
+    text-align: center;
+`
+const Spacer = styled.h1`
+    font-size: 15px;
+`
+
+const FieldHeader = styled.h1`
+    margin-top: 20px;
+    align-self: flex-start;
+    font-weight: 300;
+    font-size: 15px;
+`;
+
 export default function MyEventsPage(){
     const [isOpen, setIsOpen] = useState(false);
+    const [hour, setHour] = useState(12);
+    const [minute, setMinute] = useState(0);
+    const [AM, setAM] = useState("AM");
 
     return(
     <>
@@ -98,9 +144,50 @@ export default function MyEventsPage(){
             </ImgHContainer>
         </MyEventBody>
         <CreateEventDiv>
-            <NewEvent>
+            <NewEvent onClick={() => setIsOpen(true)}>
                 <ImgIcon src="/images/plus--v2.png" alt="Logo" />
             </NewEvent>
+            {isOpen && (
+                <Overlay onClick={() => setIsOpen(false)}>
+                    <PopupContainer onClick={(e) => e.stopPropagation()}> 
+                        <PopUpHeader>Create A New Event</PopUpHeader>
+                        <hr style={{ border: "1px solid #E4E0E1", width: "100%", margin: "10px 0px 10px 0px" }}/>
+                        <TextboxDiv>
+                            <FieldHeader>Course Name</FieldHeader>
+                            <InputTextbox type="text" placeholder="e.g. CMPEN 270"></InputTextbox>
+                            <FieldHeader>Time</FieldHeader>
+                            <SelectorDiv>
+                                <Selector id="hour" value={hour} onChange={(e) => setHour(e.target.value)}> 
+                                    <option value={12}>12</option>
+                                    <option value={1}>01</option>
+                                    <option value={2}>02</option>
+                                    <option value={3}>03</option>
+                                    <option value={4}>04</option>
+                                    <option value={5}>05</option>
+                                    <option value={6}>06</option>
+                                    <option value={7}>07</option>
+                                    <option value={8}>08</option>
+                                    <option value={9}>09</option>
+                                    <option value={10}>10</option>
+                                    <option value={11}>11</option>
+                                </Selector>
+                                <Colon>:</Colon>
+                                <Selector id="minute" value={minute} onChange={(e) => setMinute(e.target.value)}> 
+                                    <option value={0}>00</option>
+                                    <option value={15}>15</option>
+                                    <option value={30}>30</option>
+                                    <option value={45}>45</option>
+                                </Selector>
+                                <Selector id="AM_PM" value={AM} onChange={(e) => setAM(e.target.value)}> 
+                                    <option value={"AM"}>AM</option>
+                                    <option value={"PM"}>PM</option>
+                                </Selector>
+                            </SelectorDiv>
+                            
+                        </TextboxDiv>
+                    </PopupContainer>
+                </Overlay>
+            )}
         </CreateEventDiv>
         <EventBorder>
             
