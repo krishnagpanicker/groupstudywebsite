@@ -8,6 +8,7 @@ const EventBlock = styled.div`
     display: flex;
     font-family: "Geist",sans-serif;
     width: 400px;
+    min-width: 400px;
     height: 200px;
     border: 1px solid #E4E0E1;
     border-radius: 10px;
@@ -40,7 +41,7 @@ export default function StudyEvent({ timeStart,timeEnd,date,course,location }){
                 Date: {date.toString()}
             </EventText>
             <EventText>
-                Location {location}
+                Location: {location}
             </EventText>
         </EventBlock>
     )
