@@ -118,7 +118,7 @@ export default function NavBar() {
         try {
             setTimeout(() => {
                 signOut(auth);
-            }, 2000);
+            }, 1000);
             console.log("User logged out succesfully.");
             user(null);
         }
