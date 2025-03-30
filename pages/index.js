@@ -4,6 +4,7 @@ import { useStateContext } from "@/context/StateContext";
 import { useState, useEffect, useRef } from "react";
 import { collection, addDoc, getDocs, query, orderBy, where, updateDoc, doc, arrayUnion } from 'firebase/firestore';
 import { database } from '@/library/firebaseConfig';
+import { useRouter } from 'next/router';
 import StudyEvent from "@/components/StudyEvent"
 import Time from "@/utils/Time"
 import CustomDate from "@/utils/CustomDate"
@@ -137,6 +138,7 @@ const PopupStatus = styled.p`
 export default function Homepage(){
     const { user } = useStateContext();
     const overRef = useRef(null);
+    const router = useRouter();
     const [popupContent, setPopupContent] = useState(null);
     const [joinAttempted, tryJoin] = useState(false);
     const [clickedEvent, clickEvent] = useState(null);
@@ -201,6 +203,7 @@ export default function Homepage(){
                 await updateDoc(docRef, {
                     members: arrayUnion(newUser)
                 });
+                window.location.reload();
             }
             catch (error) {
                 console.error("Error joining event: ", error.message);

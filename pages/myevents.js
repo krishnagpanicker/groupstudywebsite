@@ -3,7 +3,7 @@ import { styled } from "styled-components";
 import { HContainer,Heading,Underline,ImgHContainer } from "/";
 import React, { useState, useEffect, useRef } from "react";
 import { auth, database } from '@/library/firebaseConfig';
-import { collection, addDoc, getDocs, query, orderBy, where } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, where, documentId } from 'firebase/firestore';
 import { useStateContext } from "@/context/StateContext";
 import { useRouter } from 'next/router';
 import StudyEvent from '@/components/StudyEvent';
@@ -242,14 +242,26 @@ export default function MyEventsPage(){
             orderBy("startTime.hour", "asc"),
             orderBy("startTime.minute", "asc")
         );
-
+        const x = query(
+            collection(database, "events")
+        );
         try {
             const querySnap = await getDocs(q);
+            const querySnap2 = await getDocs(x);
+            console.log("All docs: ", querySnap2);
             let eventTemp = [];
             querySnap.forEach(doc => {
                 console.log(doc.id, doc.data());
                 eventTemp.push({ id: doc.id, ...doc.data() });
             });
+            querySnap2.forEach(doc => {
+                console.log(doc.id, doc.data());
+                console.log("Doc data members: ", doc.data().members);
+                const contains = doc.data().members.some(obj => obj.email == user.email && obj.displayName == user.displayName);
+                if (contains) {
+                    eventTemp.push({ id: doc.id, ...doc.data() });
+                }
+            })
             console.log("Temp events: ", eventTemp);
             setEvents(eventTemp);
             console.log("Added events: ", events);
